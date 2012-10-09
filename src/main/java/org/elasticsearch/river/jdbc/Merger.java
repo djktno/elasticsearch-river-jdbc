@@ -270,6 +270,7 @@ public class Merger implements RowListener {
      * @param value the value
      */
     protected void merge(Map<String, Object> map, String key, Object value) {
+        System.out.println("Key: " + key + " / Value: " + value);
         int i = key.indexOf(delimiter);
         if (i <= 0) {
             map.put(key, new ValueSet(map.get(key), value));
@@ -298,6 +299,7 @@ public class Merger implements RowListener {
      * @throws IOException
      */
     private void build(Map<String, Object> map) throws IOException {
+        System.out.println("JSON Object Map: " + map);
         builder.startObject();
         for (String k : map.keySet()) {
             builder.field(k);

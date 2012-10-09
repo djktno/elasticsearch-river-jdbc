@@ -41,9 +41,21 @@ create table orders (
    created datetime NOT NULL DEFAULT '0000-00-00 00:00:00'   
 );
 
+drop table if exists tags;
+
+#create table tags (
+#
+#);
+
+drop table if exists product_tags;
+
+#create table product_tags (
+#
+#);
+
 insert into employees (name, department, salary) values('Smith', 'American Fruits', '10,000 $');
 insert into employees (name, department, salary) values('Jones', 'English Fruits', '6,000 £');
-insert into employees (name, department, salary) values('Müller', 'German Fruits', '8,000 €');
+insert into employees (name, department, salary) values('Moller', 'German Fruits', '8,000 €');
 insert into employees (name, department, salary) values('Meier', 'German Fruits', NULL);
 insert into employees (name, department, salary) values('Schulze', 'German Fruits', '6,000 €');
 

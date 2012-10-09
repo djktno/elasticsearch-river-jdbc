@@ -34,7 +34,7 @@ public class MySqlTest {
         try {
             String driverClassName = "com.mysql.jdbc.Driver";
             String url = "jdbc:mysql://localhost:3306/test";
-            String username = "";
+            String username = "test";
             String password = "";
             String sql = "select * from orders";
             List<Object> params = new ArrayList();
@@ -71,7 +71,7 @@ public class MySqlTest {
         try {
             String driverClassName = "com.mysql.jdbc.Driver";
             String url = "jdbc:mysql://localhost:3306/test";
-            String username = "";
+            String username = "test";
             String password = "";
             String sql = "select products.name as \"product.name\", orders.customer as \"product.customer.name\", orders.quantity * products.price as \"product.customer.bill\" from products, orders where products.name = orders.product ";
             List<Object> params = new ArrayList();
@@ -108,7 +108,7 @@ public class MySqlTest {
         try {
             String driverClassName = "com.mysql.jdbc.Driver";
             String url = "jdbc:mysql://localhost:3306/test";
-            String username = "";
+            String username = "test";
             String password = "";
             String sql = "select \"relations\" as \"_index\", orders.customer as \"_id\", orders.customer as \"contact.customer\", employees.name as \"contact.employee\" from orders left join employees on employees.department = orders.department";
             List<Object> params = new ArrayList();
@@ -145,7 +145,7 @@ public class MySqlTest {
         try {
             String driverClassName = "com.mysql.jdbc.Driver";
             String url = "jdbc:mysql://localhost:3306/test";
-            String user = "";
+            String user = "test";
             String password = "";
             String sql = "select products.name as \"product.name\", orders.customer as \"product.customer.name\", orders.quantity * products.price as \"product.customer.bill\" from products, orders where products.name = orders.product and orders.quantity * products.price > ?";
             List<Object> params = new ArrayList();
@@ -183,12 +183,49 @@ public class MySqlTest {
         try {
             String driverClassName = "com.mysql.jdbc.Driver";
             String url = "jdbc:mysql://localhost:3306/test";
-            String username = "";
+            String username = "test";
             String password = "";
             String sql = "select products.name as \"product.name\", orders.customer as \"product.customer.name\", orders.quantity * products.price as \"product.customer.bill\" from products, orders where products.name = orders.product and orders.created between ? - 14 and ?";
             List<Object> params = new ArrayList();
             params.add("2012-06-01");
             params.add("$now");
+            int fetchsize = 0;
+            Action listener = new DefaultAction() {
+
+                @Override
+                public void index(String index, String type, String id, long version, XContentBuilder builder) throws IOException {
+                    System.err.println("index=" + index + " type=" + type + " id=" + id + " builder=" + builder.string());
+                }
+            };
+            SQLService service = new SQLService();
+            Connection connection = service.getConnection(driverClassName, url, username, password, true);
+            PreparedStatement statement = service.prepareStatement(connection, sql);
+            service.bind(statement, params);
+            ResultSet results = service.execute(statement, fetchsize);
+            Merger merger = new Merger(listener, 1L);
+            long rows = 0L;
+            while (service.nextRow(results, merger)) {
+                rows++;
+            }
+            merger.close();
+            System.err.println("rows = " + rows);
+            service.close(results);
+            service.close(statement);
+            service.close(connection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testOneToManyMapping() {
+        try {
+            String driverClassName = "com.mysql.jdbc.Driver";
+            String url = "jdbc:mysql://localhost:3306/test";
+            String username = "test";
+            String password = "";
+            String sql = "select \"relations\" as \"_index\", orders.customer as \"_id\", orders.customer as \"contact.customer\", employees.name as \"contact.employee\" from orders inner join employees on employees.department = orders.department";
+            List<Object> params = new ArrayList();
             int fetchsize = 0;
             Action listener = new DefaultAction() {
 
